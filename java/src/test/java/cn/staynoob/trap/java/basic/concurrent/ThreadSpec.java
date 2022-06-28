@@ -1,6 +1,7 @@
 package cn.staynoob.trap.java.basic.concurrent;
 
 import cn.staynoob.trap.java.basic.testutil.TestThread;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -67,7 +68,8 @@ public class ThreadSpec {
         });
 
         thread.start();
-        thread.start();
+        Assertions.assertThatThrownBy(thread::start)
+                .isInstanceOf(IllegalThreadStateException.class);
     }
 
     @Nested

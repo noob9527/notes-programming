@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.0'
+        kotlinVersion = '1.4.0'
 
         junitPlatformVersion = '1.0.2'
         junitJupiterVersion = '5.0.2'
@@ -10,18 +10,18 @@ buildscript {
 
         gravaVersion = '21.0'
 
-        grpcVersion = '1.18.0' // CURRENT_GRPC_VERSION
-        protobufVersion = '3.6.1'
+        grpcVersion = '1.47.0' // CURRENT_GRPC_VERSION
+        protobufVersion = '3.21.2'
         protocVersion = protobufVersion
     }
 
     ext.repos = {
         mavenLocal()
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         jcenter()
         mavenCentral()
     }
-    
+
     repositories repos
 
     dependencies {
@@ -31,13 +31,11 @@ buildscript {
 }
 
 plugins {
-    id 'com.google.protobuf' version '0.8.5'
+    id 'java'
+    id 'com.google.protobuf' version '0.8.18'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+    id "org.jetbrains.kotlin.kapt" version "1.4.0"
 }
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'idea'
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 group 'cn.staynoob'
 version '1.0-SNAPSHOT'
@@ -51,22 +49,22 @@ allprojects {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
-    compile("com.sun.mail:javax.mail:${javaMailVersion}")
+    implementation("com.sun.mail:javax.mail:${javaMailVersion}")
 
-    compile ("com.google.guava:guava:${gravaVersion}")
+    implementation ("com.google.guava:guava:${gravaVersion}")
 
-    compile "io.grpc:grpc-protobuf:${grpcVersion}"
-    compile "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
     // To avoid compiler warnings about @API annotations in JUnit code
-    testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
-    testCompile 'org.assertj:assertj-core:3.8.0'
-    testCompile "org.mockito:mockito-inline:${mockitoInlineVersion}"
+    testImplementation('org.apiguardian:apiguardian-api:1.0.0')
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 }
 
 protobuf {
@@ -85,4 +83,8 @@ protobuf {
             }
         }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
