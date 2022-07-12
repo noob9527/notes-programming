@@ -6,6 +6,26 @@ import XCTest
 
 class OptionalTests: XCTestCase {
 
+    // check if a variable is optional type
+    // https://stackoverflow.com/questions/32536420/determine-if-any-type-is-optional
+    func isOptional(_ instance: Any) -> Bool {
+        let mirror = Mirror(reflecting: instance)
+        let style = mirror.displayStyle
+        return style == .optional
+    }
+
+    func testIsOptional() {
+        let optional1: Int? = 1
+        let optional2: Optional<Int> = 1
+        let optional3: Optional<Int> = Optional.none
+        let nonOptional1: Int = 1
+
+        XCTAssertTrue(isOptional(optional1))
+        XCTAssertTrue(isOptional(optional2))
+        XCTAssertTrue(isOptional(optional3))
+        XCTAssertFalse(isOptional(nonOptional1))
+    }
+
     func testOptionalIsEnum() throws {
         let foo: Int? = Optional.some(123)
         let bar: Int? = Optional.none
@@ -41,7 +61,27 @@ class OptionalTests: XCTestCase {
         if let bar = foo {
             // here bar is unwrapped
             XCTAssertNotNil(foo)
+            XCTAssertFalse(isOptional(bar))
         }
+
+        // as you may guess,
+        // outside the scope, foo is still an optional int
+        // and you can't access "bar" here
+        // so you can't apply the so called "early return" technique here.
+        // this is one of the reasons why they invented "guard" keyword
+        XCTAssertTrue(isOptional(foo))
+    }
+
+    func testSafeUnwrapViaGuard() throws {
+        let foo: Int? = 123
+
+        guard let bar = foo else {
+            XCTFail("won't go here")
+        }
+
+        XCTAssertTrue(isOptional(foo))
+        XCTAssertFalse(isOptional(bar))
+        XCTAssertEqual(bar, foo)
     }
 
     /**

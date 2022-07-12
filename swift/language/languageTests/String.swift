@@ -4,12 +4,10 @@
 
 import XCTest
 
-/**
- https://www.cocoaphile.com/posts/string-slicing-in-swift
- */
 class StringTests: XCTestCase {
 
     /**
+     https://www.cocoaphile.com/posts/string-slicing-in-swift
      #defect: overcomplicated string manipulation
      - Throws:
      */
