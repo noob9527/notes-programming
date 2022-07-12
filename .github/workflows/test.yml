@@ -1,0 +1,122 @@
+name: Test
+on: [push]
+jobs:
+  test_javascript:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./javascript
+    concurrency: 
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run changed-files
+        id: changed-files
+        uses: tj-actions/changed-files@v23.1
+        with:
+          files: '${{env.working-directory}}/**.*'
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - run: echo ${{ steps.changed-files.outputs.any_changed }}
+
+      - name: Setup node
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: yarn
+          cache-dependency-path: ${{env.working-directory}}/yarn.lock
+
+      - name: Install
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: yarn
+        working-directory: ${{env.working-directory}}
+
+      - name: test es5
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npm run es5test
+        working-directory: ${{env.working-directory}}
+
+      - name: test es6
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npm run test
+        working-directory: ${{env.working-directory}}
+
+  test_typescript:
+    runs-on: ubuntu-latest
+    concurrency: 
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      working-directory: ./typescript
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run changed-files
+        id: changed-files
+        uses: tj-actions/changed-files@v23.1
+        with:
+          files: '${{env.working-directory}}/**.*'
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - run: echo ${{ steps.changed-files.outputs.any_changed }}
+
+      - name: Setup node
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: yarn
+          cache-dependency-path: ${{env.working-directory}}/yarn.lock
+
+      - name: Install
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: yarn
+        working-directory: ${{env.working-directory}}
+
+      - name: test typescript
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npm run test
+        working-directory: ${{env.working-directory}}
+
+  # test_python:
+  #   runs-on: ubuntu-latest
+  #   concurrency: 
+  #     group: ${{ github.ref }}
+  #     cancel-in-progress: true
+  #   env:
+  #     working-directory: ./python
+  # test_shell:
+  #   runs-on: ubuntu-latest
+  #   concurrency: 
+  #     group: ${{ github.ref }}
+  #     cancel-in-progress: true
+  #   env:
+  #     working-directory: ./shell
+  # test_java:
+  #   runs-on: ubuntu-latest
+  #   concurrency: 
+  #     group: ${{ github.ref }}
+  #     cancel-in-progress: true
+  #   env:
+  #     working-directory: ./java
+  # test_kotlin:
+  #   runs-on: ubuntu-latest
+  #   concurrency: 
+  #     group: ${{ github.ref }}
+  #     cancel-in-progress: true
+  #   env:
+  #     working-directory: ./kotlin
