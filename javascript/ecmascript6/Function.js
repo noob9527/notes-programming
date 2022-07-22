@@ -73,7 +73,7 @@ test('可以使用扩展运算符将函数转换为接收参数数组', () => {
     function sum(...rest) {
         return rest.reduce((a, c) => a + c, 0);
     }
-    expect(sum([1, 2, 3])).toBeNaN();
+    expect(sum([1, 2, 3])).toBe(0 + [1,2,3]);
     expect(es5splat(sum)([1, 2, 3])).toBe(6);
     expect(es6splat(sum)([1, 2, 3])).toBe(6);
 });

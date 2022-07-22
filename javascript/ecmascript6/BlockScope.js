@@ -35,7 +35,7 @@ test('ES2015循环体每次执行都会产生一个作用域', () => {
 
 test('let关键字不存在变量提升(hoist)', () => {
     expect(foo).toBeFalsy();
-    expect(() => bar).toThrowError('bar is not defined');
+    expect(() => bar).toThrow();
     var foo;
     let bar;
 });
@@ -44,11 +44,11 @@ test('只要区块中存在let定义，则在定义前使用变量会报错(temp
     var foo;
     {
         expect(typeof bar).toBe('undefined');
-        expect(() => typeof foo).toThrowError('foo is not defined'); //TDZ中使用typeof依然会报错
+        expect(() => typeof foo).toThrow(); //TDZ中使用typeof依然会报错
         let foo;
     }
     expect(() => { var a = a; }).not.toThrow();
-    expect(() => { let b = b; }).toThrowError('b is not defined');
+    expect(() => { let b = b; }).toThrow();
 });
 
 test('es6不再需要立即执行函数表达式', () => {

@@ -62,7 +62,7 @@ test('类的构造函数如果显式返回值，则返回的对象不再是该�
 
 test('类的定义不存在变量提升', () => {
     expect(Foo).toBeDefined();
-    expect(() => Bar).toThrowError('Bar is not defined');
+    expect(() => Bar).toThrow()
     function Foo() { }
     class Bar { }
 });
@@ -108,7 +108,7 @@ test('类的方法内部的this指向该类的实例，因此如果用到this, �
         }
     }
     let fn = (new Foo()).foo;
-    expect(fn).toThrowError("Cannot read property 'bar' of undefined");
+    expect(fn).toThrowError("undefined");
     //一种解决方案是使用bind绑定this
     class Foo1 {
         constructor() {
@@ -212,15 +212,22 @@ test('类继承的实现', () => {
 });
 
 //super关键字
+// Note: super is a keyword and these are special syntactic constructs.
+// super is not a variable that points to the prototype object.
+// Attempting to read super itself is a SyntaxError.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super#description
 test('子类中的super关键字指向父类的原型对象', () => {
     class Parent {
     }
     class Child extends Parent {
         constructor() {
             super();
-            expect(super).toBe(Parent.prototype);
+            // console.log(super); // SyntaxError: 'super' keyword unexpected here
+            // expect(super).toBe(Parent.prototype); // this used to work, but doesn't work anymore
+            expect(super.constructor).toEqual(Parent);
         }
     }
+    new Child();
 });
 
 test('使用super调用父类方法时，this指向子类的实例', () => {

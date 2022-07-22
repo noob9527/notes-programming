@@ -94,7 +94,7 @@ test('Map.prototype.forEach', () => {
     const map = new Map([[1, 2], [2, 3], [3, 4]]);
     const obj = {};
     map.forEach(function(v,k,m){
-        expect(m).not.toEqual(map); //todo:这里两个map为什么不同
+        expect(m).toEqual(map);
         expect(this).toBe(obj);
         expect(v).toBe(k+1);
     }, obj);
