@@ -1,44 +1,42 @@
 // https://leanpub.com/understandinges6/read/#leanpub-auto-proxies-and-the-reflection-api
-import test from 'ava';
-import chai from 'chai';
 
-chai.should();
 
-test('basic usage', t => {
+
+test('basic usage', () => {
     const target = {};
     const proxy = new Proxy(target, {});
     proxy.name = 'proxy';
-    target.name.should.equal('proxy')
+    expect(target.name).toBe('proxy')
     target.name = "target";
-    proxy.name.should.equal('target')
+    expect(proxy.name).toBe('target')
 });
 
-test('proxy set behavior', t => {
+test('proxy set behavior', () => {
     // ex: property validation
     const counter = { count: 0 };
     const proxy = new Proxy(counter, {
         set(target, key, value, receiver) {
-            target.should.equal(counter);
+            expect(target).toBe(counter);
             if(key === 'count' && isNaN(value)) throw new Error('should be number');
             return Reflect.set(target, key, value, receiver);
         }
     });
 
     proxy.whatever = 'whatever';
-    counter.whatever.should.equal('whatever');
+    expect(counter.whatever).toBe('whatever');
 
     proxy.count = 1
-    counter.count.should.equal(1);
+    expect(counter.count).toBe(1);
 
     // manipulate proxy
-    t.throws(() => proxy.count = 'foo', 'should be number');
+    expect(() => proxy.count = 'foo').toThrowError('should be number');
 
     // manipulate origin object
     counter.count = 'foo'
-    counter.count.should.equal('foo');
+    expect(counter.count).toBe('foo');
 });
 
-test('proxy get behavior', t => {
+test('proxy get behavior', () => {
     // ex: object shape validation
     const proxy = new Proxy({}, {
         get(target, key, receiver) {
@@ -48,11 +46,11 @@ test('proxy get behavior', t => {
         }
     });
     proxy.foo = 'foo'
-    proxy.foo.should.equal('foo');
-    t.throws(() => proxy.bar, 'property bar does not exist')
+    expect(proxy.foo).toBe('foo');
+    expect(() => proxy.bar).toThrowError('property bar does not exist')
 });
 
-test('proxy has behavior', t => {
+test('proxy has behavior', () => {
     // ex: hide property
     const proxy = new Proxy({ 
         foo: 'foo',
@@ -62,11 +60,11 @@ test('proxy has behavior', t => {
             return key === 'bar' ? false : Reflect.has(target, key);
         }
     });
-    ('foo' in proxy).should.be.true;
-    ('bar' in proxy).should.be.false;
+    expect('foo' in proxy).toBe(true);
+    expect('bar' in proxy).toBe(false);
 });
 
-test('proxy apply behavior', t => {
+test('proxy apply behavior', () => {
     const sumProxy = new Proxy(
         (...args) => args.reduce((acc, curr) => acc + curr, 0),
         {
@@ -79,11 +77,11 @@ test('proxy apply behavior', t => {
             }
         }
     );
-    sumProxy(1, 2).should.equal(3);
-    t.throws(() => sumProxy(1, '2'), 'argument must be number');
+    expect(sumProxy(1, 2)).toBe(3);
+    expect(() => sumProxy(1, '2')).toThrowError('argument must be number');
 });
 
-test('proxy construct behavior', t => {
+test('proxy construct behavior', () => {
     function Foo() {}
     const NonInstantiable = new Proxy(Foo, {
         construct(target, args) {
@@ -92,8 +90,8 @@ test('proxy construct behavior', t => {
     });
 
     const foo = new Foo();
-    (foo instanceof Foo).should.true;
-    t.throws(() => new NonInstantiable(), 'can not be instantiate');
+    expect(foo instanceof Foo).toBe(true);
+    expect(() => new NonInstantiable()).toThrowError('can not be instantiate');
     // test new.target in function implementation is preferable,
     // But sometimes you aren’t in control of the function
     // whose behavior needs to be modified. In that case
@@ -103,21 +101,21 @@ test('proxy construct behavior', t => {
             throw new Error('can not be instantiate');
         }
     }
-    t.throws(() => new Bar(), 'can not be instantiate');
+    expect(() => new Bar()).toThrowError('can not be instantiate');
 });
 
-test('revocable', t => {
+test('revocable', () => {
     // proxy - the proxy object that can be revoked
     // revoke - the function to call to revoke the proxy
     const { proxy, revoke } = Proxy.revocable({ foo: 'foo' }, {});
-    proxy.foo.should.equal('foo');
+    expect(proxy.foo).toBe('foo');
     revoke();
-    t.throws(() => proxy.foo);
+    expect(() => proxy.foo).toThrow();
 });
 
 // Only the get, set, and has proxy traps will ever be
 // called on a proxy when it’s used as a prototype
-test('using a proxy as a prototype', t => {
+test('using a proxy as a prototype', () => {
     let target = {};
     let thing = Object.create(new Proxy(target, {
         get(target, key, receiver) {
@@ -128,6 +126,6 @@ test('using a proxy as a prototype', t => {
     }));
 
     thing.name = 'thing';
-    thing.name.should.equal('thing');
-    t.throws(() => thing.unknown, 'unknown does not exist')
+    expect(thing.name).toBe('thing');
+    expect(() => thing.unknown).toThrowError('unknown does not exist')
 });

@@ -2,33 +2,47 @@
   "name": "trap",
   "version": "1.0.0",
   "scripts": {
-    "test": "node --harmony node_modules/.bin/ava ecmascript6 --verbose",
-    "test:watch": "node --harmony node_modules/.bin/ava ecmascript6 --verbose --watch",
+    "test:es6": "jest --config=ecmascript6/jest.config.js",
+    "test:es6:watch": "jest --config=ecmascript6/jest.config.js --watch",
     "start": "npm run test:watch",
     "es5test": "node node_modules/.bin/mocha --ui bdd --recursive ecmascript5",
     "es5test:watch": "node node_modules/.bin/mocha --watch --ui bdd --recursive ecmascript5"
   },
   "author": "xy",
   "devDependencies": {
-    "@ava/babel-preset-stage-4": "^1.0.0",
-    "@ava/babel-preset-transform-test-files": "^2.0.1",
-    "babel-plugin-transform-class-properties": "^6.23.0",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "ava": "^0.17.0",
+    "@babel/core": "^7.18.9",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.18.9",
+    "@babel/preset-env": "^7.18.9",
+    "babel-jest": "^28.1.3",
+    "jest": "^28.1.3",
     "mocha": "^2.5.3",
-    "chai": "^3.5.0",
     "should": "^9.0.2"
   },
-  "ava": {
-    "babel": {
-      "presets": [
-        "@ava/stage-4",
-        "@ava/transform-test-files"
-      ],
-      "plugins": [
-        "transform-decorators-legacy",
-        "transform-class-properties"
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
       ]
-    }
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
+    ]
   }
 }
