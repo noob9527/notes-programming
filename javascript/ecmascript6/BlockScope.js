@@ -1,9 +1,7 @@
-import test from 'ava';
-import chai from 'chai';
 
-const should = chai.should();
 
-test('函数每次调用会产生新的作用域链，同一个外部函数内定义的多个嵌套函数共享一个作用域链', t => {
+
+test('函数每次调用会产生新的作用域链，同一个外部函数内定义的多个嵌套函数共享一个作用域链', () => {
     function counter() {
         var n = 0;
         return {
@@ -14,13 +12,13 @@ test('函数每次调用会产生新的作用域链，同一个外部函数内�
     var cnt1 = counter();
     var cnt2 = counter();
     cnt1.count(); //n自增
-    cnt2.count().should.equal(0); //由于使用不同的作用域链,因此cnt1不会影响到cnt2
+    expect(cnt2.count()).toBe(0); //由于使用不同的作用域链,因此cnt1不会影响到cnt2
     cnt1.reset();
-    cnt1.count().should.equal(0); //由于reset与count共享变量n，因此这里返回0
-    cnt2.count().should.equal(1);
+    expect(cnt1.count()).toBe(0); //由于reset与count共享变量n，因此这里返回0
+    expect(cnt2.count()).toBe(1);
 });
 
-test('ES2015循环体每次执行都会产生一个作用域', t => {
+test('ES2015循环体每次执行都会产生一个作用域', () => {
     const funcArr1 = [];
     for (var i = 0; i < 3; ++i) {
         funcArr1.push(() => i);
@@ -31,29 +29,29 @@ test('ES2015循环体每次执行都会产生一个作用域', t => {
         funcArr2.push(() => i);
     }
     const resArr2 = funcArr2.map(e => e());
-    resArr1.should.eql([3, 3, 3]);
-    resArr2.should.eql([0, 1, 2]);
+    expect(resArr1).toEqual([3, 3, 3]);
+    expect(resArr2).toEqual([0, 1, 2]);
 });
 
-test('let关键字不存在变量提升(hoist)', t => {
-    should.not.exist(foo);
-    t.throws(() => bar, 'bar is not defined');
+test('let关键字不存在变量提升(hoist)', () => {
+    expect(foo).toBeFalsy();
+    expect(() => bar).toThrowError('bar is not defined');
     var foo;
     let bar;
 });
 
-test('只要区块中存在let定义，则在定义前使用变量会报错(temporal dead zone)', t => {
+test('只要区块中存在let定义，则在定义前使用变量会报错(temporal dead zone)', () => {
     var foo;
     {
-        (typeof bar).should.equal('undefined');
-        t.throws(() => typeof foo, 'foo is not defined'); //TDZ中使用typeof依然会报错
+        expect(typeof bar).toBe('undefined');
+        expect(() => typeof foo).toThrowError('foo is not defined'); //TDZ中使用typeof依然会报错
         let foo;
     }
-    t.notThrows(() => { var a = a; });
-    t.throws(() => { let b = b; }, 'b is not defined');
+    expect(() => { var a = a; }).not.toThrow();
+    expect(() => { let b = b; }).toThrowError('b is not defined');
 });
 
-test('es6不再需要立即执行函数表达式', t=>{
+test('es6不再需要立即执行函数表达式', () => {
     (function(){
         var foo;
     }());
@@ -63,21 +61,21 @@ test('es6不再需要立即执行函数表达式', t=>{
     }
 });
 
-test('es6允许在块级作用域中声明函数，行为类似与let',t=>{
+test('es6允许在块级作用域中声明函数，行为类似与let',() => {
     {
         function foo(){}
     }
-    (typeof foo).should.equal('undefined');
+    expect(typeof foo).toBe('undefined');
 });
 
-test('使用const定义常量', t => {
+test('使用const定义常量', () => {
     const PI = 3.14;
-    t.throws(() => PI = 3.5, 'Assignment to constant variable.');
+    expect(() => PI = 3.5).toThrowError('Assignment to constant variable.');
 });
 
-test('const类似于java中的final，对于Object类型的变量，仅保证内存地址不变', t=>{
+test('const类似于java中的final，对于Object类型的变量，仅保证内存地址不变', () => {
     const foo = {bar:0};
     foo.bar = 1;
-    foo.bar.should.equal(1);
+    expect(foo.bar).toBe(1);
 });
 

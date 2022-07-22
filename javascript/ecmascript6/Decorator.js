@@ -1,7 +1,5 @@
-import test from 'ava';
-import chai from 'chai';
 
-const should = chai.should();
+
 Reflect.defineProperty(Object.prototype, 'log', {
     get: function () {
         console.log(this);
@@ -14,7 +12,7 @@ Reflect.defineProperty(Object.prototype, 'log', {
 // class A {}
 // A = decorator(A) || A;
 
-test('class decorator', t => {
+test('class decorator', () => {
     @Bar
     class Foo {
         static foo = 'foo';
@@ -22,11 +20,11 @@ test('class decorator', t => {
     function Bar(target) {
         target.bar = 'bar';
     }
-    Foo.foo.should.equal('foo');
-    Foo.bar.should.equal('bar');
+    expect(Foo.foo).toBe('foo');
+    expect(Foo.bar).toBe('bar');
 });
 
-test('修饰器可以返回完全不同的对象', t => {
+test('修饰器可以返回完全不同的对象', () => {
     @Bar
     class Foo {
     }
@@ -35,10 +33,10 @@ test('修饰器可以返回完全不同的对象', t => {
             bar: 'bar'
         };
     }
-    Foo.should.eql({ bar: 'bar' });
+    expect(Foo).toEqual({ bar: 'bar' });
 });
 
-test('修饰器可以带有参数', t => {
+test('修饰器可以带有参数', () => {
     @Bar('super bar')
     class Foo {
         static foo = 'foo';
@@ -48,11 +46,11 @@ test('修饰器可以带有参数', t => {
             target.bar = bar
         }
     }
-    Foo.foo.should.equal('foo');
-    Foo.bar.should.equal('super bar');
+    expect(Foo.foo).toBe('foo');
+    expect(Foo.bar).toBe('super bar');
 });
 
-test('修饰器可以为类新增实例属性', t => {
+test('修饰器可以为类新增实例属性', () => {
     @Bar
     class Foo {
         foo = 'foo';
@@ -61,11 +59,11 @@ test('修饰器可以为类新增实例属性', t => {
         target.prototype.bar = 'bar';
     }
     const foo = new Foo;
-    foo.foo.should.equal('foo');
-    foo.bar.should.equal('bar');
+    expect(foo.foo).toBe('foo');
+    expect(foo.bar).toBe('bar');
 });
 
-test('修饰类的方法', t => {
+test('修饰类的方法', () => {
     class Foo {
         @Bar
         foo() {
@@ -73,37 +71,37 @@ test('修饰类的方法', t => {
     }
 
     function Bar(target, name, descriptor) {
-        name.should.equal('foo');
+        expect(name).toBe('foo');
         descriptor.value = 'foo';
         return descriptor;
     }
 
     const foo = new Foo();
-    foo.foo.should.equal('foo');
+    expect(foo.foo).toBe('foo');
 });
 
-test('修饰静态成员', t => {
+test('修饰静态成员', () => {
     class Foo {
         @Bar
         static foo = 'foo'
     }
     function Bar(target, name, descriptor) {
-        (typeof target).should.equal('function');
-        target.name.should.equal('Foo');
-        name.should.equal('foo');
-        (typeof descriptor).should.equal('object');
+        expect(typeof target).toBe('function');
+        expect(target.name).toBe('Foo');
+        expect(name).toBe('foo');
+        expect(typeof descriptor).toBe('object');
     }
 });
 
-test('修饰类的属性', t => {
+test('修饰类的属性', () => {
     class Foo {
         @Bar
         foo;
     }
 
     function Bar(target, name, descriptor) {
-        target.should.ok;
-        name.should.equal('foo');
+        expect(target).ok;
+        expect(name).toBe('foo');
 
         descriptor.enumerable = true;
         descriptor.writable = true;
@@ -113,8 +111,7 @@ test('修饰类的属性', t => {
     }
 
     const foo = new Foo();
-    Object.getOwnPropertyDescriptor(foo, 'foo').should
-        .eql({
+    expect(Object.getOwnPropertyDescriptor(foo, 'foo')).toEqual({
             value: undefined,
             writable: true,
             configurable: true,
@@ -122,7 +119,7 @@ test('修饰类的属性', t => {
         });
 });
 
-test('修饰器的执行顺序', t => {
+test('修饰器的执行顺序', () => {
     const list = [];
 
     function Bar(order) {
@@ -140,6 +137,6 @@ test('修饰器的执行顺序', t => {
         }
     }
 
-    list.should.eql(['enter Bar1', 'enter Bar2', 'executed Bar2', 'executed Bar1']);
+    expect(list).toEqual(['enter Bar1', 'enter Bar2', 'executed Bar2', 'executed Bar1']);
 });
 

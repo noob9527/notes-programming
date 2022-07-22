@@ -1,52 +1,50 @@
-import test from 'ava';
-import chai from 'chai';
 
-const should = chai.should();
+
 
 //参数默认值
-test('参数默认值', t => {
+test('参数默认值', () => {
     function fn(foo = 'foo') {
         return foo;
     }
-    fn().should.eql('foo');
-    fn('bar').should.eql('bar');
+    expect(fn()).toEqual('foo');
+    expect(fn('bar')).toEqual('bar');
 });
 
-test('参数默认值在调用时计算，而不是在定义时计算', t => {
+test('参数默认值在调用时计算，而不是在定义时计算', () => {
     let x = 0;
     function fn(a = x + 1) {
         return a;
     }
-    fn().should.equal(1);
+    expect(fn()).toBe(1);
     x = 1;
-    fn().should.equal(2);
+    expect(fn()).toBe(2);
 });
 
-test('如果定义默认值的参数不是该函数最后一个参数,则需要使用undefined调用来应用该默认值', t => {
+test('如果定义默认值的参数不是该函数最后一个参数,则需要使用undefined调用来应用该默认值', () => {
     function fn(foo = 'foo', bar) {
         return [foo, bar];
     }
-    fn('bar').should.eql(['bar', undefined]);
-    fn(undefined, 'bar').should.eql(['foo', 'bar']);
+    expect(fn('bar')).toEqual(['bar', undefined]);
+    expect(fn(undefined, 'bar')).toEqual(['foo', 'bar']);
 });
 
-test('带默认值的参数已经其后续参数不会被计入函数的length属性', t => {
+test('带默认值的参数已经其后续参数不会被计入函数的length属性', () => {
     function fn(a, b = 2, c) { }
-    fn.length.should.equal(1);
+    expect(fn.length).toBe(1);
 });
 
-test('不定项参数也不会计入length属性', t => {
+test('不定项参数也不会计入length属性', () => {
     function fn(a, ...args) { }
-    fn.length.should.equal(1);
+    expect(fn.length).toBe(1);
 });
 
 //rest参数
-test('rest参数用于替换arguments对象', t => {
+test('rest参数用于替换arguments对象', () => {
     const add = (...numbers) => numbers.reduce((accu, curr) => accu + curr, 0);
-    add(1, 2, 3).should.equal(6);
+    expect(add(1, 2, 3)).toBe(6);
 });
 
-test('可以使用剩余参数将函数转换为接收参数列表', t => {
+test('可以使用剩余参数将函数转换为接收参数列表', () => {
     //es5
     function es5unSplat(func) {
         return function () {
@@ -60,11 +58,11 @@ test('可以使用剩余参数将函数转换为接收参数列表', t => {
     function sum(array) {
         return array.reduce((a, c) => a + c, 0);
     }
-    es5unSplat(sum)(1, 2, 3).should.equal(6);
-    es6unSplat(sum)(1, 2, 3).should.equal(6);
+    expect(es5unSplat(sum)(1, 2, 3)).toBe(6);
+    expect(es6unSplat(sum)(1, 2, 3)).toBe(6);
 });
 
-test('可以使用扩展运算符将函数转换为接收参数数组', t => {
+test('可以使用扩展运算符将函数转换为接收参数数组', () => {
     //es5
     function es5splat(func) {
         return array => func.apply(null, array);
@@ -75,12 +73,12 @@ test('可以使用扩展运算符将函数转换为接收参数数组', t => {
     function sum(...rest) {
         return rest.reduce((a, c) => a + c, 0);
     }
-    sum([1, 2, 3]).should.NaN;
-    es5splat(sum)([1, 2, 3]).should.equal(6);
-    es6splat(sum)([1, 2, 3]).should.equal(6);
+    expect(sum([1, 2, 3])).toBeNaN();
+    expect(es5splat(sum)([1, 2, 3])).toBe(6);
+    expect(es6splat(sum)([1, 2, 3])).toBe(6);
 });
 
-test('箭头函数中的this总是指向函数定义生效时所在的对象', t => {
+test('箭头函数中的this总是指向函数定义生效时所在的对象', () => {
     function Foo() {
         this.name = 'foo';
         this.func1 = function () {
@@ -90,57 +88,57 @@ test('箭头函数中的this总是指向函数定义生效时所在的对象', t
     }
     const foo = new Foo();
     const bar = { name: 'bar' };
-    foo.func1().should.equal('foo');
-    foo.func2().should.equal('foo');
-    foo.func1.call(bar).should.equal('bar');
-    foo.func2.call(bar).should.equal('foo');
+    expect(foo.func1()).toBe('foo');
+    expect(foo.func2()).toBe('foo');
+    expect(foo.func1.call(bar)).toBe('bar');
+    expect(foo.func2.call(bar)).toBe('foo');
 });
 
-test('箭头函数本身内部不存在arguments对象,箭头函数内的arguments对象总是指向上级函数作用域的arguments', t => {
+test('箭头函数本身内部不存在arguments对象,箭头函数内的arguments对象总是指向上级函数作用域的arguments', () => {
     function fn1() {
         const arg = arguments;
-        return () => arguments.should.equal(arg);
+        return () => expect(arguments).toBe(arg);
     }
     fn1()();
 });
 
 //async function
-test('async函数的返回值都是promise', async t => {
+test('async函数的返回值都是promise', async () => {
     async function fn() { }
     async function foo() {
         return 'foo';
     }
-    (fn() instanceof Promise).should.true;
-    (foo() instanceof Promise).should.true;
-    (await fn() === undefined).should.true;
-    (await foo() == 'foo').should.true;
+    expect(fn() instanceof Promise).toBe(true);
+    expect(foo() instanceof Promise).toBe(true);
+    expect((await fn()) === undefined).toBe(true);
+    expect((await foo()) == 'foo').toBe(true);
 });
 
-test('await命令后的promise如果reject,则async函数返回的promise也会reject', async t => {
+test('await命令后的promise如果reject,则async函数返回的promise也会reject', async () => {
     async function foo() {
         await Promise.reject('foo');
         throw new Error('bar');//这行不会执行
     }
-    await foo().catch(e => e.should.equal('foo'));
+    await foo().catch(e => expect(e).toBe('foo'));
 });
 
-test('async函数体内抛出的错误，将作为返回的promise对象的catch方法的参数', async t => {
+test('async函数体内抛出的错误，将作为返回的promise对象的catch方法的参数', async () => {
     const err = new Error('foo');
     async function foo() {
         throw err;
     }
-    await foo().catch(e => e.should.equal(err));
+    await foo().catch(e => expect(e).toBe(err));
 });
 
-test('await命令后面可以不带异步操作', async t => {
+test('await命令后面可以不带异步操作', async () => {
     const obj = {};
     const foo = await 'foo';
     const bar = await obj;
-    foo.should.equal('foo');
-    bar.should.equal(obj);
+    expect(foo).toBe('foo');
+    expect(bar).toBe(obj);
 });
 
-test('如果await命令后的操作互相独立，则应该使用Promise.all同时执行', async t => {
+test('如果await命令后的操作互相独立，则应该使用Promise.all同时执行', async () => {
     let [foo, bar] = await Promise.all([1, 2]);
-    [foo, bar].should.eql([1, 2]);
+    expect([foo, bar]).toEqual([1, 2]);
 });

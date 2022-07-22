@@ -1,52 +1,50 @@
-import test from 'ava';
-import chai from 'chai';
 
-const should = chai.should();
+
 Reflect.defineProperty(Object.prototype, 'log', {
     get: function () {
         console.log(this);
     }
 });
 
-test('class关键字只是语法糖，其数据类型是函数', t => {
+test('class关键字只是语法糖，其数据类型是函数', () => {
     class Person { }
-    (typeof Person).should.equal('function');
-    Person.should.equal(Person.prototype.constructor);
+    expect(typeof Person).toBe('function');
+    expect(Person).toBe(Person.prototype.constructor);
 });
 
-test('类的方法都定义在函数的prototype中', t => {
+test('类的方法都定义在函数的prototype中', () => {
     class Foo {
         foo() {
             return 'foo';
         }
     }
     const foo = new Foo();
-    foo.foo().should.equal('foo');
-    Foo.prototype.foo().should.equal('foo');
-    Reflect.deleteProperty(Foo.prototype, 'foo').should.true;
+    expect(foo.foo()).toBe('foo');
+    expect(Foo.prototype.foo()).toBe('foo');
+    expect(Reflect.deleteProperty(Foo.prototype, 'foo')).toBe(true);
     Foo.prototype.bar = () => 'bar';
-    should.not.exist(foo.foo);
-    foo.bar().should.equal('bar');
+    expect(foo.foo).toBeFalsy();
+    expect(foo.bar()).toBe('bar');
 });
 
-test('类里面定义的方法都是不可枚举的', function () {
+test('类里面定义的方法都是不可枚举的', function() {
     class Foo {
         foo() { }
     }
     Foo.prototype.bar = () => 'bar'; //如果使用这种方法为'类'添加方法，该方法是可枚举属性
-    Reflect.getOwnPropertyDescriptor(Foo.prototype, 'foo')
-        .enumerable.should.false;
-    Reflect.getOwnPropertyDescriptor(Foo.prototype, 'bar')
-        .enumerable.should.true;
+    expect(Reflect.getOwnPropertyDescriptor(Foo.prototype, 'foo')
+        .enumerable).toBe(false);
+    expect(Reflect.getOwnPropertyDescriptor(Foo.prototype, 'bar')
+        .enumerable).toBe(true);
 });
 
-test('类的数据类型虽然是函数，但它必须使用new关键字调用', t => {
+test('类的数据类型虽然是函数，但它必须使用new关键字调用', () => {
     class Foo { }
-    (typeof Foo).should.equal('function');
-    t.throws(() => Foo(), "Class constructor Foo cannot be invoked without 'new'");
+    expect(typeof Foo).toBe('function');
+    expect(() => Foo()).toThrowError("Class constructor Foo cannot be invoked without 'new'");
 });
 
-test('类的构造函数如果显式返回值，则返回的对象不再是该类的实例，这与直接使用构造函数一致', t => {
+test('类的构造函数如果显式返回值，则返回的对象不再是该类的实例，这与直接使用构造函数一致', () => {
     class Foo { }
     class Bar {
         constructor() {
@@ -56,51 +54,51 @@ test('类的构造函数如果显式返回值，则返回的对象不再是该�
     function Baz() {
         return new Foo();
     }
-    (new Bar() instanceof Bar).should.false;
-    (new Bar() instanceof Foo).should.true;
-    (new Baz() instanceof Baz).should.false;
-    (new Baz() instanceof Foo).should.true;
+    expect(new Bar() instanceof Bar).toBe(false);
+    expect(new Bar() instanceof Foo).toBe(true);
+    expect(new Baz() instanceof Baz).toBe(false);
+    expect(new Baz() instanceof Foo).toBe(true);
 });
 
-test('类的定义不存在变量提升', t => {
-    should.exist(Foo);
-    t.throws(() => Bar, 'Bar is not defined');
+test('类的定义不存在变量提升', () => {
+    expect(Foo).toBeDefined();
+    expect(() => Bar).toThrowError('Bar is not defined');
     function Foo() { }
     class Bar { }
 });
 
-test('与函数一样，可以使用表达式形式定义类', t => {
+test('与函数一样，可以使用表达式形式定义类', () => {
     const Foo = class { };
-    (new Foo() instanceof Foo).should.true;
+    expect(new Foo() instanceof Foo).toBe(true);
 });
 
-test('使用表达式时也可以为类指定名称，但该名称只能在类的内部使用', t => {
+test('使用表达式时也可以为类指定名称，但该名称只能在类的内部使用', () => {
     const Foo = class Bar {
         getClassName() {
             return Bar.name;
         }
     }
-    t.throws(() => Bar, 'Bar is not defined');
-    (new Foo()).getClassName().should.equal('Bar');
+    expect(() => Bar).toThrowError('Bar is not defined');
+    expect((new Foo()).getClassName()).toBe('Bar');
 });
 
-test('类与函数一样带有name属性，且该属性优先返回紧跟在class关键字后的类名', t => {
+test('类与函数一样带有name属性，且该属性优先返回紧跟在class关键字后的类名', () => {
     const Foo1 = class { }
-    Foo1.name.should.equal('Foo1');
+    expect(Foo1.name).toBe('Foo1');
     const Foo2 = class Bar { }
-    Foo2.name.should.equal('Bar');
+    expect(Foo2.name).toBe('Bar');
 });
 
-test('使用表达式定义类，可以写出立即执行的类', t => {
+test('使用表达式定义类，可以写出立即执行的类', () => {
     const foo = new class {
         constructor(name) {
             this.name = name;
         }
     }('foo');
-    foo.name.should.equal('foo');
+    expect(foo.name).toBe('foo');
 });
 
-test('类的方法内部的this指向该类的实例，因此如果用到this, 则该方法不能作为函数调用', t => {
+test('类的方法内部的this指向该类的实例，因此如果用到this, 则该方法不能作为函数调用', () => {
     class Foo {
         foo() {
             return this.bar();
@@ -110,7 +108,7 @@ test('类的方法内部的this指向该类的实例，因此如果用到this, �
         }
     }
     let fn = (new Foo()).foo;
-    t.throws(fn, "Cannot read property 'bar' of undefined");
+    expect(fn).toThrowError("Cannot read property 'bar' of undefined");
     //一种解决方案是使用bind绑定this
     class Foo1 {
         constructor() {
@@ -124,7 +122,7 @@ test('类的方法内部的this指向该类的实例，因此如果用到this, �
         }
     }
     fn = (new Foo1()).foo;
-    fn().should.equal('bar');
+    expect(fn()).toBe('bar');
     //另一种方法是使用箭头函数
     class Foo2 {
         constructor() {
@@ -135,11 +133,11 @@ test('类的方法内部的this指向该类的实例，因此如果用到this, �
         }
     }
     fn = (new Foo2()).foo;
-    fn().should.equal('bar');
+    expect(fn()).toBe('bar');
 });
 
 //class extend
-test('使用extend关键字实现继承', t => {
+test('使用extend关键字实现继承', () => {
     class Parent {
         constructor(name) {
             this.name = name;
@@ -158,18 +156,18 @@ test('使用extend关键字实现继承', t => {
     Child1.__proto__ = Parent;
 
     const child1 = new Child1('foo');
-    child1.sayName().should.equal('foo');
-    (child1 instanceof Parent).should.true;
+    expect(child1.sayName()).toBe('foo');
+    expect(child1 instanceof Parent).toBe(true);
 
     //es6
     class Child2 extends Parent {
     }
     const child2 = new Child2('foo');
-    child2.sayName().should.equal('foo');
-    (child2 instanceof Parent).should.true;
+    expect(child2.sayName()).toBe('foo');
+    expect(child2 instanceof Parent).toBe(true);
 });
 
-test('子类如果有自己的构造函数，则必须在该函数中调用父类构造函数', t => {
+test('子类如果有自己的构造函数，则必须在该函数中调用父类构造函数', () => {
     class Parent {
     }
     class Child1 extends Parent {
@@ -187,45 +185,45 @@ test('子类如果有自己的构造函数，则必须在该函数中调用父�
             super();
         }
     }
-    new Child1().should.exist;
-    t.throws(() => new Child2());
-    new Child3().should.exist;
+    expect(new Child1()).toBeDefined();
+    expect(() => new Child2()).toThrow();
+    expect(new Child3()).toBeDefined();
 });
 
-test('子类构造函数只有调用父类构造函数后，才能获取this引用', t => {
+test('子类构造函数只有调用父类构造函数后，才能获取this引用', () => {
     class Parent {
     }
     class Child extends Parent {
         constructor() {
-            should.not.exist(this);
+            expect(this).toBeFalsy();
             super();
-            this.should.exist;
+            expect(this).toBeDefined();
         }
     }
 });
 
-test('类继承的实现', t => {
+test('类继承的实现', () => {
     class Parent {
     }
     class Child extends Parent {
     }
-    Reflect.getPrototypeOf(Child.prototype).should.equal(Parent.prototype);
-    Reflect.getPrototypeOf(Child).should.equal(Parent);
+    expect(Reflect.getPrototypeOf(Child.prototype)).toBe(Parent.prototype);
+    expect(Reflect.getPrototypeOf(Child)).toBe(Parent);
 });
 
 //super关键字
-test('子类中的super关键字指向父类的原型对象', t => {
+test('子类中的super关键字指向父类的原型对象', () => {
     class Parent {
     }
     class Child extends Parent {
         constructor() {
             super();
-            super.should.equal(Parent.prototype);
+            expect(super).toBe(Parent.prototype);
         }
     }
 });
 
-test('使用super调用父类方法时，this指向子类的实例', t => {
+test('使用super调用父类方法时，this指向子类的实例', () => {
     class Parent {
         name() {
             return this.name;
@@ -237,12 +235,12 @@ test('使用super调用父类方法时，this指向子类的实例', t => {
             this.name = 'child';
         }
         name() {
-            super.name().should.equal('child');
+            expect(super.name()).toBe('child');
         }
     }
 });
 
-test('在子类中对super属性赋值，实际上等价于对this赋值', t => {
+test('在子类中对super属性赋值，实际上等价于对this赋值', () => {
     class Parent {
     }
     class Child extends Parent {
@@ -250,14 +248,14 @@ test('在子类中对super属性赋值，实际上等价于对this赋值', t => 
             super();
             this.x = 1;
             super.x = 2;
-            should.not.exist(super.x)
-            this.x.should.equal(2);
+            expect(super.x).toBeFalsy()
+            expect(this.x).toBe(2);
         }
     }
     new Child();
 });
 
-test('es6 class能够正确继承原生的构造函数', t => {
+test('es6 class能够正确继承原生的构造函数', () => {
     function ES5Array() {
         Array.apply(this, arguments);
     }
@@ -265,38 +263,38 @@ test('es6 class能够正确继承原生的构造函数', t => {
     //es5得到的行为与Array不一致
     let arr = new ES5Array();
     arr[0] = 1;
-    arr.length.should.equal(0);
+    expect(arr.length).toBe(0);
     //es6正常
     class ES6Array extends Array { }
     arr = new ES6Array();
     arr[0] = 1;
-    arr.length.should.equal(1);
+    expect(arr.length).toBe(1);
 });
 
 //static
-test('使用static关键字定义静态方法，静态方法可以被子类继承', t => {
+test('使用static关键字定义静态方法，静态方法可以被子类继承', () => {
     class Foo {
         static foo() {
             return 'foo';
         }
     }
     class Bar extends Foo { }
-    Foo.foo().should.equal('foo');
-    should.not.exist((new Foo).foo);
-    Bar.foo().should.equal('foo');
+    expect(Foo.foo()).toBe('foo');
+    expect((new Foo).foo).toBeFalsy();
+    expect(Bar.foo()).toBe('foo');
 });
 
-test('使用static关键字定义静态属性,静态属性同样可以被子类继承', t => {
+test('使用static关键字定义静态属性,静态属性同样可以被子类继承', () => {
     class Foo {
         static foo = 'foo';
     }
     class Bar extends Foo { }
-    Foo.foo.should.equal('foo');
-    should.not.exist((new Foo).foo);
-    Bar.foo.should.equal('foo');
+    expect(Foo.foo).toBe('foo');
+    expect((new Foo).foo).toBeFalsy();
+    expect(Bar.foo).toBe('foo');
 });
 
-test('可以通过super关键字调用父类的静态方法', t => {
+test('可以通过super关键字调用父类的静态方法', () => {
     class Foo {
         static foo() {
             return 'foo';
@@ -307,10 +305,10 @@ test('可以通过super关键字调用父类的静态方法', t => {
             return super.foo();
         }
     }
-    Bar.bar().should.equal('foo');
+    expect(Bar.bar()).toBe('foo');
 });
 
-test('实例属性在类的内部使用等式定义，或在类的方法中使用this定义', t => {
+test('实例属性在类的内部使用等式定义，或在类的方法中使用this定义', () => {
     class Foo {
         prop1 = 1;
         static prop2 = 2;
@@ -320,13 +318,13 @@ test('实例属性在类的内部使用等式定义，或在类的方法中使�
     }
     Foo.prop4 = 4;
     const foo = new Foo();
-    foo.prop1.should.equal(1);
-    Foo.prop2.should.equal(2);
-    foo.prop3.should.equal(3);
-    Foo.prop4.should.equal(4);
+    expect(foo.prop1).toBe(1);
+    expect(Foo.prop2).toBe(2);
+    expect(foo.prop3).toBe(3);
+    expect(Foo.prop4).toBe(4);
 });
 
-test('属性赋值可以使用表达式', t =>{
+test('属性赋值可以使用表达式', () => {
     const prop1 = 'prop1';
     const prop2 = Symbol('prop2');
     const prop3 = Symbol('prop3');
@@ -336,33 +334,33 @@ test('属性赋值可以使用表达式', t =>{
         static [prop3] = 3;
     }
     const foo = new Foo();
-    foo[prop1].should.equal(1);
-    foo[prop2].should.equal(2);
-    Foo[prop3].should.equal(3);
+    expect(foo[prop1]).toBe(1);
+    expect(foo[prop2]).toBe(2);
+    expect(Foo[prop3]).toBe(3);
 });
 
 //new.target
-test('使用new.target访问new命令作用的构造函数', t => {
+test('使用new.target访问new命令作用的构造函数', () => {
     function Fn1() {
-        new.target.should.equal(Fn1);
+        expect(new.target).toBe(Fn1);
     }
     function Fn2() {
-        should.not.exist(new.target);
+        expect(new.target).toBeFalsy();
     }
     new Fn1();
     Fn2();
 });
 
-test('在class中使用new.target访问当前类，如果一个类继承另一个类，则new.target返回子类', t => {
+test('在class中使用new.target访问当前类，如果一个类继承另一个类，则new.target返回子类', () => {
     class Parent {
         constructor(){
-            new.target.should.equal(Child);
+            expect(new.target).toBe(Child);
         }
     }
     class Child extends Parent{
         constructor() {
             super();
-            new.target.should.equal(Child);
+            expect(new.target).toBe(Child);
         }
     }
     new Child();
