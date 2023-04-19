@@ -6,6 +6,12 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.reflect.KClass
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.withNullability
+import kotlin.reflect.jvm.jvmErasure
 
 @DisplayName("反射")
 class ReflectionSpec {
@@ -100,10 +106,54 @@ class ReflectionSpec {
         }
     }
 
+    /**
+     * https://stackoverflow.com/questions/44203297/kotlins-reflection-unknown-type-parameter/44203910#44203910
+     */
     @Nested
     @DisplayName("反射类型")
     inner class KTypeSpec {
+        @Test
+        @DisplayName("get type argument")
+        fun test100() {
+            val anyCollection = Collection::class.createType(listOf(
+                KTypeProjection.invariant(Any::class.starProjectedType.withNullability(true))
+            ))
+            assertThat(anyCollection.arguments).hasSize(1)
+            assertThat(anyCollection.arguments.singleOrNull()?.type?.jvmErasure).isEqualTo(Any::class)
+        }
 
+        @Test
+        @DisplayName("get type argument, nested case")
+        fun test120() {
+            class Sample(
+                val prop: List<List<Any>>
+            )
+            assertThat(Sample::prop.returnType.arguments).hasSize(1)
+        }
+
+        @Test
+        @DisplayName("List<Int> should be sub type of List<Number>")
+        fun test200() {
+            val numberList = List::class.createType(listOf(
+                KTypeProjection.invariant(Number::class.starProjectedType)
+            ))
+            val intList = List::class.createType(listOf(
+                KTypeProjection.invariant(Int::class.starProjectedType)
+            ))
+            assertThat(intList.isSubtypeOf(numberList)).isTrue()
+        }
+
+        @Test
+        @DisplayName("List<Int> should be sub type of Collection<Any?>")
+        fun test300() {
+            val anyCollection = Collection::class.createType(listOf(
+                KTypeProjection.invariant(Any::class.starProjectedType.withNullability(true))
+            ))
+            val intList = List::class.createType(listOf(
+                KTypeProjection.invariant(Int::class.starProjectedType)
+            ))
+            assertThat(intList.isSubtypeOf(anyCollection)).isTrue()
+        }
     }
 
 }

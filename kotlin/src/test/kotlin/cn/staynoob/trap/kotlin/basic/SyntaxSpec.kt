@@ -70,11 +70,6 @@ class SyntaxSpec {
             fail("won't invoke")
         }
         assertThat(count2).isEqualTo(1)
-        loop@ for (i in 1..5) {
-            return@loop
-            fail("won't invoke")
-        }
-        fail("won't invoke")
     }
 
     @Nested
