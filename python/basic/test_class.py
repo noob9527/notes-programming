@@ -66,6 +66,7 @@ class ClassTestCase(unittest.TestCase):
             def foo(): return 'foo'
 
         self.assertIsNotNone(Foo.foo())
+        self.assertEqual(Foo().foo(), Foo.foo())
 
     # 类方法也可以被类直接调用，同时会自动绑定cls参数
     def testClassMethod(self):
@@ -74,3 +75,5 @@ class ClassTestCase(unittest.TestCase):
             def foo(cls): return cls
 
         self.assertIsNotNone(Foo.foo())
+        self.assertEqual(Foo().foo(), Foo.foo())
+

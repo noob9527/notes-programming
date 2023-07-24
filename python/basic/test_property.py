@@ -53,3 +53,32 @@ class PropertyTestCase(unittest.TestCase):
         with self.assertRaises(AttributeError):
             # noinspection PyPropertyAccess
             foo.get_foo = 'bar'
+
+    def testProperty300(self):
+        class C:
+            x = []
+
+            def add(self, element):
+                self.x.append(element)
+
+        o1 = C()
+        o2 = C()
+        o1.x.append(1)
+        o2.x.append(2)
+        assert o1.x == [1, 2]
+        assert o1.x is o2.x
+
+    # see: https://docs.python.org/3/library/dataclasses.html#mutable-default-values
+    def testProperty400(self):
+        class C:
+            x = 2
+
+        print(C.x)
+
+        o1 = C()
+        o2 = C()
+        o1.x = 1
+        o2.x = 2
+        self.assertEqual(o1.x, 1)
+        self.assertEqual(o2.x, 2)
+
