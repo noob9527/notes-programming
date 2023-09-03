@@ -33,6 +33,7 @@ class MiscellaneousSpec {
             Assertions.assertThat(foo.length).isNotNull()
         }
 
+        @Suppress("USELESS_IS_CHECK")
         @Test
         @DisplayName("is 操作符会区分可空和不可空类型")
         fun test150() {
@@ -40,7 +41,9 @@ class MiscellaneousSpec {
             val bar: String? = "bar"
 
             assertThat(foo is String).isFalse()
+            assertThat(foo is String?).isTrue()
             assertThat(bar is String).isTrue()
+            assertThat(bar is String?).isTrue()
         }
 
         @Test
