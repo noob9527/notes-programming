@@ -41,10 +41,17 @@ TEST(double, compare) {
 }
 
 /**
- * char 以数值形式存储
+ * char: 以数值形式存储
  */
-TEST(char, char) {
+TEST(char, compare_str_and_int_1) {
     EXPECT_EQ('A', 65);
+}
+
+/**
+ * char: '\0' == 0
+ */
+TEST(char, compare_str_and_int_2) {
+    EXPECT_EQ('\0', 0);
 }
 
 /**
@@ -57,10 +64,24 @@ TEST(_Bool, _Bool) {
 
 /**
  * 所有的非零值都被认为是真
+ *
+ * 由于 '\0' == 0, 所以 '\0' 是假
  */
 TEST(_Bool, implicitConvertToBoolean) {
     int res = 2 && -2 && 'A' && "";
     EXPECT_EQ(res, 1);
+}
+
+/**
+ * '\0' 是 falsy 值
+ */
+TEST(_Bool, implicitConvertToBoolean2) {
+    int res;
+    if('\0')
+        res = 1;
+    else
+        res = 0;
+    EXPECT_EQ(res, 0);
 }
 
 /**
@@ -69,6 +90,18 @@ TEST(_Bool, implicitConvertToBoolean) {
 TEST(primitive, sizeof) {
     EXPECT_EQ(sizeof(char), 1);
     EXPECT_EQ(sizeof("foo"), 4);
+}
+
+/**
+ * 定义字符串的方式与定义字符数组类似，
+ * 使用双引号初始化，会自动在字符数组末尾追加 '\0'
+ */
+TEST(string, declare) {
+    char str1[] = "foo";
+    char str2[] = {'f', 'o', 'o', '\0'};
+    for (int i = 0; i < sizeof(str1); i++) {
+        EXPECT_EQ(str1[i], str2[i]);
+    }
 }
 
 /**
