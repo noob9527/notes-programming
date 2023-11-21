@@ -2,6 +2,16 @@ import unittest
 
 
 class SyntaxTestCase(unittest.TestCase):
+    def testForLoop(self):
+        arr1 = [1,2,3]
+        arr2 = [ele * 2 for ele in arr1]
+        print(arr2)
+
+    def testForLoopWithIndex(self):
+        arr1 = ['a', 'b', 'c']
+        arr2 = [(index, ele) for index, ele in enumerate(arr1)]
+        print(arr2)
+
     def testElseInLoop(self):
         # for/while循环可以使用else子句，它仅在没有使用break时调用
         for i in range(10):

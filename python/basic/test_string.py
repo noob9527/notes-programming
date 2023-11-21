@@ -14,3 +14,8 @@ class StringTestCase(unittest.TestCase):
         foo = 'f'
         bar = 'b'
         self.assertEqual(f'{foo} {bar}', 'f b')
+
+    def testStringSplit(self):
+        str = 'foo,bar,baz,quz'
+        arr = str.split(',')
+        print(arr)
