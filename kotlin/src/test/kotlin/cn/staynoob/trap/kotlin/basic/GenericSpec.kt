@@ -1,4 +1,10 @@
-@file:Suppress("USELESS_IS_CHECK", "UNCHECKED_CAST", "unused", "UNUSED_VARIABLE", "UNUSED_PARAMETER")
+@file:Suppress(
+    "USELESS_IS_CHECK",
+    "UNCHECKED_CAST",
+    "unused",
+    "UNUSED_VARIABLE",
+    "UNUSED_PARAMETER"
+)
 
 package cn.staynoob.trap.kotlin.basic
 
@@ -8,6 +14,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.*
+import kotlin.reflect.full.createInstance
 
 /**
  * @see cn.staynoob.trap.java.basic.GenericSpec
@@ -59,6 +66,20 @@ class GenericSpec {
             class Foo : Parent1, Parent2
             assertThat(greeting(Foo())).isEqualTo("parent1parent2")
         }
+
+        // https://kotlinlang.org/docs/generics.html#definitely-non-nullable-types
+        @Test
+        @DisplayName("Definitely non-nullable types, stable in 1.7.0")
+        internal fun test300() {
+            fun <T> greeting(param1: T, param2: T & Any) {
+            }
+
+            val tmp: String? = null
+            // incorrect
+//            greeting(tmp, tmp)
+            // correct
+            greeting(tmp, tmp.orEmpty())
+        }
     }
 
     @Nested
@@ -89,10 +110,11 @@ class GenericSpec {
             val intList: List<Int> = listOf("a", "b", "c") as List<Int>
             assertThat(intList.size).isEqualTo(3)
             assertThatThrownBy { intList[0] + 1 }
-                    .hasSameClassAs(ClassCastException())
+                .hasSameClassAs(ClassCastException())
         }
 
         private inline fun <reified T> isA(value: Any) = value is T
+
         @Test
         @DisplayName("内联函数可以实化类型参数")
         internal fun test400() {
@@ -194,16 +216,16 @@ class GenericSpec {
             @DisplayName("使用点变型(Use-site variance)")
             fun test100() {
                 fun <T> copyData(
-                        src: Deque<out T>,
-                        dest: Deque<in T>
+                    src: Deque<out T>,
+                    dest: Deque<in T>
                 ) {
                     dest.addAll(src)
                 }
 
                 val int = LinkedList<Int>()
-                        .apply {
-                            addAll(listOf(1, 2, 3))
-                        }
+                    .apply {
+                        addAll(listOf(1, 2, 3))
+                    }
                 val num = LinkedList<Number>()
                 copyData(int, num)
             }
@@ -268,4 +290,24 @@ class GenericSpec {
         }
     }
 
+    interface Producer<T> {
+        fun produce(): T
+    }
+
+    class StringProducer : Producer<String> {
+        override fun produce(): String {
+            return "42"
+        }
+    }
+
+    inline fun <reified S : Producer<T>, T> underscoreTypeArgExample(): T {
+        return S::class.createInstance().produce()
+    }
+
+    @Test
+    @DisplayName("underscore type argument")
+    fun typeInferTest() {
+        val a = underscoreTypeArgExample<StringProducer, _>()
+        assertThat(a).isEqualTo("42")
+    }
 }

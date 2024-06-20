@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.4.0'
+        kotlin_version = '1.7.0'
         junit_platform_version = '1.0.2'
         junit_jupiter_version = '5.0.2'
         jackson_kotlin_module_version = '2.9.0'
@@ -59,7 +59,7 @@ dependencies {
     testImplementation("io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junit_jupiter_version}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}")
+//    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}")
 
     // To avoid compiler warnings about @API annotations in JUnit code
     testImplementation('org.apiguardian:apiguardian-api:1.0.0')

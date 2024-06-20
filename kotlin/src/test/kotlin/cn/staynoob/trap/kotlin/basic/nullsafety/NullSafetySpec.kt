@@ -1,4 +1,13 @@
-@file:Suppress("USELESS_ELVIS", "CAST_NEVER_SUCCEEDS", "UNREACHABLE_CODE", "SENSELESS_COMPARISON", "ReplaceSingleLineLet", "unused", "UNUSED_VARIABLE", "UNUSED_EXPRESSION")
+@file:Suppress(
+    "USELESS_ELVIS",
+    "CAST_NEVER_SUCCEEDS",
+    "UNREACHABLE_CODE",
+    "SENSELESS_COMPARISON",
+    "ReplaceSingleLineLet",
+    "unused",
+    "UNUSED_VARIABLE",
+    "UNUSED_EXPRESSION"
+)
 
 package cn.staynoob.trap.kotlin.basic.nullsafety
 
@@ -6,7 +15,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.lang.NullPointerException
 
 @DisplayName("空安全")
 class NullSafetySpec {
@@ -36,10 +44,10 @@ class NullSafetySpec {
     @DisplayName("!! operator")
     fun test400() {
         assertThatThrownBy { null!! }
-                .hasSameClassAs(KotlinNullPointerException())
+            .isInstanceOf(NullPointerException::class.java)
         val nullable: String? = null
         assertThatThrownBy { nullable!! }
-                .hasSameClassAs(KotlinNullPointerException())
+            .isInstanceOf(NullPointerException::class.java)
     }
 
     @Test
@@ -67,7 +75,7 @@ class NullSafetySpec {
 
         val foo = Foo()
         assertThatThrownBy { foo.foo }
-                .hasSameClassAs(UninitializedPropertyAccessException())
+            .hasSameClassAs(UninitializedPropertyAccessException())
     }
 
     @Test
@@ -108,10 +116,10 @@ class NullSafetySpec {
         // 错误的使用java属性会在运行时报错
         assertThatThrownBy {
             val platform1: String = demo.platformType
-        }.hasSameClassAs(IllegalStateException())
+        }.isInstanceOf(NullPointerException::class.java)
         assertThatThrownBy {
-            demo.platformType.toUpperCase()
-        }.hasSameClassAs(IllegalStateException())
+            demo.platformType.uppercase()
+        }.isInstanceOf(NullPointerException::class.java)
         val platform2: String? = demo.platformType
     }
 
@@ -142,6 +150,6 @@ class NullSafetySpec {
         val set = setOf(1, 2, 3)
         Fixture.addElement(set, null)
         assertThatThrownBy { set.forEach { it } }
-                .hasSameClassAs(NullPointerException())
+            .hasSameClassAs(NullPointerException())
     }
 }
