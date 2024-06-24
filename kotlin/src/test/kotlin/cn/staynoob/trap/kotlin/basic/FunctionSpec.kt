@@ -1,9 +1,9 @@
 package cn.staynoob.trap.kotlin.basic
 
-import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 @DisplayName("函数")
 class FunctionSpec {
@@ -15,7 +15,8 @@ class FunctionSpec {
         @Test
         @DisplayName("如果在调用函数时指明了参数名称，那该参数后面的所有参数都需要指定名称")
         fun test100() {
-            fun fn(foo: Any, bar: Any, baz: Any, qux: Any) = listOf<Any>(foo, bar, baz, qux)
+            fun fn(foo: Any, bar: Any, baz: Any, qux: Any) =
+                listOf<Any>(foo, bar, baz, qux)
             // correct
             val list1 = fn(1, 2, 3, 4)
             val list2 = fn(1, 2, baz = 3, qux = 4)
@@ -30,7 +31,8 @@ class FunctionSpec {
         @DisplayName("如果不使用命名参数，则只允许省略排在末尾的参数")
         fun test200() {
             // 因此，如果希望调用者不使用命名参数就能使用默认参数，则应该尽量把带默认值的参数放在参数列表最后
-            fun fn(foo: Any = 1, bar: Any = 2, baz: Any = 3, qux: Any) = listOf<Any>(foo, bar, baz, qux)
+            fun fn(foo: Any = 1, bar: Any = 2, baz: Any = 3, qux: Any) =
+                listOf<Any>(foo, bar, baz, qux)
             // correct
             fn(qux = 4)
             // incorrect
@@ -56,9 +58,30 @@ class FunctionSpec {
     }
 
     @Test
+    @DisplayName("只有表达式的函数体")
+    fun test110() {
+        fun fn1(int: Int) = println(int)
+
+        fun fn2(int: Int) {
+            return println(int)
+        }
+
+        fun fn3(int: Int) = { println(int) }
+
+        fun fn4(int: Int): () -> Unit {
+            return { println(int) }
+        }
+        listOf(1, 2, 3).forEach {
+            fn1(it)
+            fn3(it)()
+        }
+    }
+
+    @Test
     @DisplayName("只有表达式函数体可以省略返回值类型")
     fun test100() {
         fun fn1() = 1
+
         // correct
         fun fn2(): Int {
             return 2
@@ -74,7 +97,7 @@ class FunctionSpec {
     fun test200() {
         var x = 0
         fun fn1() = ++x
-        val fn2= { ++x }
+        val fn2 = { ++x }
         fn1()
         assertThat(x).isEqualTo(1)
         fn2()
@@ -86,7 +109,7 @@ class FunctionSpec {
     fun test2000() {
         infix fun Int.add(other: Int): Int = this + other
         assertThat(1.add(2))
-                .isEqualTo(1 add 2)
-                .isEqualTo(3)
+            .isEqualTo(1 add 2)
+            .isEqualTo(3)
     }
 }

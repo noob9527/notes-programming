@@ -57,4 +57,5 @@ public class GenericSpec {
         copyData(intList, numList);
         assertThat(numList).containsExactly(1, 2, 3);
     }
+
 }

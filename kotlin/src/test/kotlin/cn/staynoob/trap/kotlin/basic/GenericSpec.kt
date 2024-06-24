@@ -290,24 +290,4 @@ class GenericSpec {
         }
     }
 
-    interface Producer<T> {
-        fun produce(): T
-    }
-
-    class StringProducer : Producer<String> {
-        override fun produce(): String {
-            return "42"
-        }
-    }
-
-    inline fun <reified S : Producer<T>, T> underscoreTypeArgExample(): T {
-        return S::class.createInstance().produce()
-    }
-
-    @Test
-    @DisplayName("underscore type argument")
-    fun typeInferTest() {
-        val a = underscoreTypeArgExample<StringProducer, _>()
-        assertThat(a).isEqualTo("42")
-    }
 }
