@@ -107,7 +107,8 @@ class OperatorOverloadingSpec {
         @Test
         @DisplayName("调用java代码中的重载运算符")
         internal fun test1000() {
-            operator fun Fixture.Operand.minus(other: Fixture.Operand) = subtract(other)
+            operator fun Fixture.Operand.minus(other: Fixture.Operand) =
+                subtract(other)
             assertThat(Fixture.Operand(1) + Fixture.Operand(1))
                 .isEqualTo(2)
             assertThat(Fixture.Operand(1) - Fixture.Operand(1))

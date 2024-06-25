@@ -13,8 +13,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.io.Serializable
 import java.util.*
-import kotlin.reflect.full.createInstance
 
 /**
  * @see cn.staynoob.trap.java.basic.GenericSpec
@@ -125,6 +125,14 @@ class GenericSpec {
         }
     }
 
+    class CovarianceProblemFixture1<out T>
+
+    class CovarianceProblemFixture2 {
+        operator fun <T> set(wrapper: CovarianceProblemFixture1<Serializable>, value: T): T {
+            return value
+        }
+    }
+
     /**
      * kotlin允许声明处型变与使用点型变（类型投影）
      * @see cn.staynoob.trap.java.basic.GenericSpec.test200
@@ -200,6 +208,15 @@ class GenericSpec {
             class Producer2<out T>(val value: T)
             // incorrect
 //            class Producer3<out T>(var value: T)
+        }
+
+        @Test
+        @DisplayName("协变可能会导致的问题")
+        internal fun test500() {
+            val sample = CovarianceProblemFixture2()
+            val valueWrapper = CovarianceProblemFixture1<String>()
+            sample[valueWrapper] = "123"
+            sample[valueWrapper] = 123
         }
 
         @DisplayName("类型投影")
