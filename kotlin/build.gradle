@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.7.0'
+        kotlin_version = '1.8.20'
         junit_platform_version = '1.0.2'
         junit_jupiter_version = '5.0.2'
         jackson_kotlin_module_version = '2.9.0'
@@ -60,6 +60,17 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junit_jupiter_version}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}")
+
+    // scripting
+    testImplementation("org.jetbrains.kotlin:kotlin-scripting-common")
+    testImplementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
+//    testImplementation("org.jetbrains.kotlin:kotlin-scripting-dependencies")
+//    testImplementation("org.jetbrains.kotlin:kotlin-scripting-dependencies-maven")
+    testImplementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
+    testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
+
+    // scripting jsr223
+    testRuntimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223:$kotlin_version")
 
     // To avoid compiler warnings about @API annotations in JUnit code
     testImplementation('org.apiguardian:apiguardian-api:1.0.0')
