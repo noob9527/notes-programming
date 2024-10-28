@@ -72,7 +72,7 @@ TEST(reference, const_reference_variable) {
 }
 
 /**
- * 引用常量的常量引用，在使用 const_const 得到变量引用后，变量本身依然不可变
+ * 引用常量的常量引用，在使用 const_cast 得到变量引用后，变量本身依然不可变
  * 究极槽点!
  */
 TEST(reference, const_reference_const) {
