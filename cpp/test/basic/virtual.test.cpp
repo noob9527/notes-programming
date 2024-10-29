@@ -1,12 +1,16 @@
-//
-// Created by xy on 23-9-9.
-//
 
 #include <iostream>
 #include "gtest/gtest.h"
 
 using namespace std;
 
+/**
+ * "virtual" doesn't mean "abstract" !!!
+ * 
+ * virtual 关键字决定使用基类指针或引用调用函数时，是否有多态行为，即是否使用“运行时”类型调用函数
+ * "abstract" 更类似于 virtual = 0， 即纯虚函数，纯虚函数（= 0）使类成为抽象类
+ * 
+ */
 namespace VirtualSample {
     class Base {
     public:

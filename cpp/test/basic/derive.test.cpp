@@ -7,6 +7,13 @@
 
 using namespace std;
 
+/**
+ * 一般来说，public继承是最常用的，因为它符合直观的“is-a”关系，
+ * 并且允许派生类对象被用作基类对象。
+ * protected和private继承则用于更特殊的场景，
+ * 通常涉及到实现细节的封装和访问控制。
+ * -- claude AI
+ */
 namespace DeriveAccessSpecifierSample {
     class Base {
     private:
