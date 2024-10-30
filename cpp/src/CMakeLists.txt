@@ -4,7 +4,7 @@ add_definitions(-std=c++11)
 SET(CMAKE_C_COMPILER /usr/bin/c++)
 
 # 将.目录所有源文件名保存至变量 SRC_FILES
-aux_source_directory(. SRC_FILES)
+#aux_source_directory(. SRC_FILES)
 #aux_source_directory(./practices/**/*.cpp SRC_FILES)
 # aux_source_directory(./practices/2020_11_A SRC_FILES)
 

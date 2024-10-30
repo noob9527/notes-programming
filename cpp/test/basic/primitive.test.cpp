@@ -40,6 +40,22 @@ TEST(double, compare) {
     EXPECT_TRUE(fabs(res - 1) < 0.0001);
 }
 
+
+int fun1()
+{
+    return 3.14;
+}
+
+/**
+ * 槽点：double 到 int 也能隐式类型转换
+ */
+TEST(number, implicit_conversion1) {
+    int res = fun1();
+    std::cout << res << std::endl;
+    EXPECT_EQ(res, 3);
+}
+
+
 /**
  * bool 也是整数类型
  */
@@ -68,4 +84,3 @@ TEST(primitive, sizeof) {
     EXPECT_EQ(sizeof(char), 1);
     EXPECT_EQ(sizeof("foo"), 4);
 }
-
