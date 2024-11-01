@@ -61,4 +61,9 @@ namespace StringSample
         EXPECT_NE("foo" + 40, "foo40");
         EXPECT_NE(bar, "bar40");
     }
+
+    TEST(string, concat_3)
+    {
+        cout << "ab" "cd" << endl;
+    }
 }

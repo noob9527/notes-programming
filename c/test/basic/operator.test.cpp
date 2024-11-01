@@ -48,7 +48,7 @@ TEST(Operator, arrow) {
 /**
  * 点运算符优先级高于&运算符
  */
-TEST(Opertor, reference) {
+TEST(Operator, reference) {
     struct person {
         char firstname[100];
     } foo = {"stephen"};
