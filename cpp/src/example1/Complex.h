@@ -6,31 +6,37 @@
 #define COMPLEX_H
 
 
-class Complex
-{
+class Complex {
 public:
     int real = 0;
     int imagine = 0;
 
-    Complex()
-    {
+    Complex() = default;
+
+    Complex(int real, int imagine) : real(real), imagine(imagine) {
     }
 
-    Complex(int real, int imagine): real(real), imagine(imagine)
-    {
+    Complex &operator=(const Complex &other) {
+        if (&other == this) return *this;
+        real = other.real;
+        imagine = other.imagine;
+        return *this;
     }
 
-    Complex& operator=(Complex& other)
-    {
-        if(&other == this) return *this;
+    Complex operator+(const Complex &other) const {
+        return {real + other.real, imagine + other.imagine};
     }
 
-    Complex& operator+(Complex& other)
-    {
-        // Complex result;
-        this->real = this->real + other.real;
-        this->imagine = this->imagine + other.imagine;
-        // return this;
+    Complex operator-(const Complex &other) const {
+        return {real - other.real, imagine - other.imagine};
+    }
+
+    Complex operator*(const Complex &other) const {
+        return {real * other.real, imagine * other.imagine};
+    }
+
+    Complex operator/(const Complex &other) const {
+        return {real / other.real, imagine / other.imagine};
     }
 };
 
