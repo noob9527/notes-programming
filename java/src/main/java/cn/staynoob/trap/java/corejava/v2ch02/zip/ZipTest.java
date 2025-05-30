@@ -20,7 +20,7 @@ public class ZipTest
       System.out.println("---");
       showContents2(zipname);
    }
-   
+
    public static void showContents(String zipname) throws IOException
    {
       // Here, we use the classic zip API
@@ -30,29 +30,31 @@ public class ZipTest
          while ((entry = zin.getNextEntry()) != null)
          {
             System.out.println(entry.getName());
-            
+
             Scanner in = new Scanner(zin, "UTF-8");
             while (in.hasNextLine())
                System.out.println("   " + in.nextLine());
-            // DO NOT CLOSE in            
+            // DO NOT CLOSE in
             zin.closeEntry();
          }
       }
    }
-   
+
+   // error: reference to newFileSystem is ambiguous
+   //      FileSystem fs = FileSystems.newFileSystem(Paths.get(zipname), null);
    public static void showContents2(String zipname) throws IOException
    {
       // Here, we make a Java SE 7 file system
-      FileSystem fs = FileSystems.newFileSystem(Paths.get(zipname), null);
-      Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<Path>()
-         {
-            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
-            {               
-               System.out.println(path);
-               for (String line : Files.readAllLines(path, Charset.forName("UTF-8")))
-                  System.out.println("   " + line);
-               return FileVisitResult.CONTINUE;
-            }
-         });
+//      FileSystem fs = FileSystems.newFileSystem(Paths.get(zipname), null);
+//      Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<Path>()
+//         {
+//            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
+//            {
+//               System.out.println(path);
+//               for (String line : Files.readAllLines(path, Charset.forName("UTF-8")))
+//                  System.out.println("   " + line);
+//               return FileVisitResult.CONTINUE;
+//            }
+//         });
    }
 }
